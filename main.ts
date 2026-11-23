@@ -33,6 +33,15 @@ if (typeof parsed !== "object" || parsed === null || typeof (parsed as { url?: u
   process.exit(1);
 }
 
+// The url must name an X post: https://x.com/<handle>/status/<digits>
+// (twitter.com, www./mobile. and /i/web/status/<id> forms are read the same
+// way by the gate, but the canonical x.com form is what we write).
+const url = (parsed as { url: string }).url;
+if (!/^https:\/\/(www\.|mobile\.)?(x\.com|twitter\.com)\/[^/]+\/status\/\d+$/.test(url)) {
+  console.error(`POST.json url does not name an X post: ${url}`);
+  process.exit(1);
+}
+
 mkdirSync(OUTPUT_DIR, { recursive: true });
 try {
   copyFileSync(source, target);
